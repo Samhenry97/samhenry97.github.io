@@ -23,6 +23,9 @@
         <span class="nav-account-badge">
           {{ isActive ? '✅ Member' : isTrial ? '🎉 Trial' : '⏳ Pending' }}
         </span>
+        <button class="hamburger" @click="state.showSidebar = true" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
   </nav>
@@ -31,7 +34,7 @@
 <script setup>
 import { useSubscription } from '../composables/useSubscription'
 
-const { isEngaged, isActive, isTrial, openModal } = useSubscription()
+const { state, isEngaged, isActive, isTrial, openModal } = useSubscription()
 </script>
 
 <style scoped>
@@ -83,6 +86,8 @@ const { isEngaged, isActive, isTrial, openModal } = useSubscription()
 
 .nav-cta { padding: 0.55rem 1.25rem; font-size: 0.85rem; flex-shrink: 0; }
 
+.nav-account { margin-left: auto; }
+
 .nav-account-badge {
   font-size: 0.8rem;
   font-weight: 700;
@@ -92,5 +97,28 @@ const { isEngaged, isActive, isTrial, openModal } = useSubscription()
 
 @media (max-width: 640px) {
   .nav-links { display: none; }
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+}
+@media (max-width: 640px) {
+  .hamburger { display: flex; }
 }
 </style>

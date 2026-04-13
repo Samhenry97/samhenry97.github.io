@@ -12,7 +12,8 @@
           <div class="plan-name">Sam &amp; Fam Standard</div>
           <div class="plan-price">${{ priceNum }} <span class="plan-cycle">/ {{ period }}</span></div>
           <div class="plan-status">
-            <span class="status-pill">✅ Active</span>
+            <span class="status-pill" v-if="isTrial">🎉 Trial Active</span>
+            <span class="status-pill" v-else>✅ Active</span>
             <span class="plan-since">Member since January 1, 1970</span>
           </div>
         </div>
@@ -113,8 +114,19 @@
           <button class="billing-btn" @click="windowAlert('Support ticket created. Ticket #' + Math.floor(Math.random()*900000+100000) + '\nExpected response: 3–5 business years.')">Open Ticket</button>
         </div>
 
-        <!-- The cancel button. A little easier to find now. Still small. -->
-        <div class="cancel-section">
+        <!-- Trial cancel — routes through the trap first -->
+        <div v-if="isTrial" class="cancel-section">
+          <p class="cancel-intro">
+            Want to cancel your trial? You can do that below.
+          </p>
+          <button class="cancel-link" @click="promptCancelTrial">
+            Cancel Free Trial
+          </button>
+          <span class="cancel-note"> — you'll be asked to confirm</span>
+        </div>
+
+        <!-- Full membership cancel -->
+        <div v-else class="cancel-section">
           <p class="cancel-intro">
             Looking to cancel? We understand. We don't agree, but we understand.
           </p>
@@ -133,7 +145,7 @@
 <script setup>
 import { useSubscription } from '../composables/useSubscription'
 
-const { priceNum, period, beginCancellation } = useSubscription()
+const { priceNum, period, isTrial, beginCancellation, promptCancelTrial } = useSubscription()
 
 function windowAlert(msg) { window.alert(msg) }
 

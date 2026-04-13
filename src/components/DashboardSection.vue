@@ -24,19 +24,22 @@
     <!-- Dashboard header -->
     <div class="dash-header">
       <div class="dash-header-inner">
-        <div>
-          <h1 class="dash-title">MEMBER DASHBOARD</h1>
-          <p class="dash-welcome">
-            Welcome back, <strong>Valued Subscriber #4,721</strong>!
-            &nbsp;|&nbsp; Plan: <span style="color: var(--yellow)">Sam &amp; Fam Standard</span>
-            &nbsp;|&nbsp; Status:
-            <span style="color: var(--green-light)">✅ ACTIVE</span>
-          </p>
-          <p class="dash-meta">
-            Account created: January 1, 1970 &nbsp;|&nbsp;
-            Last login: {{ today }} (also your first login, technically) &nbsp;|&nbsp;
-            <span style="color: #fbbf24">🌟 Loyalty Tier: Gold (Self-Assigned)</span>
-          </p>
+        <div class="dash-header-left">
+          <div>
+            <h1 class="dash-title">MEMBER DASHBOARD</h1>
+            <p class="dash-welcome">
+              Welcome back, <strong>Valued Subscriber #4,721</strong>!
+              &nbsp;|&nbsp; Plan: <span style="color: var(--yellow)">Sam &amp; Fam Standard</span>
+              &nbsp;|&nbsp; Status:
+              <span v-if="isTrial" style="color: var(--yellow)">🎉 FREE TRIAL — 7 days remaining</span>
+              <span v-else style="color: var(--green-light)">✅ ACTIVE</span>
+            </p>
+            <p class="dash-meta">
+              Account created: January 1, 1970 &nbsp;|&nbsp;
+              Last login: {{ today }} (also your first login, technically) &nbsp;|&nbsp;
+              <span style="color: #fbbf24">🌟 Loyalty Tier: Gold (Self-Assigned)</span>
+            </p>
+          </div>
         </div>
         <div class="dash-header-actions">
           <button class="dash-action-btn" @click="state.currentPage = 'billing'">
@@ -51,26 +54,33 @@
 
     <div class="dash-body">
 
-      <!-- Sidebar -->
-      <aside class="dash-sidebar">
+      <!-- Mobile sidebar backdrop -->
+      <div v-if="state.showSidebar" class="sidebar-backdrop" @click="state.showSidebar = false"></div>
+
+      <!-- Sidebar (desktop inline, mobile drawer) -->
+      <aside class="dash-sidebar" :class="{ 'sidebar-open': state.showSidebar }">
+        <div class="sidebar-close-row">
+          <span class="sidebar-close-label">NAVIGATION</span>
+          <button class="sidebar-close-btn" @click="state.showSidebar = false">✕</button>
+        </div>
+
         <nav class="dash-nav">
-          <div class="dash-nav-label">NAVIGATION</div>
           <a class="dash-nav-item" :class="{ active: state.currentPage === 'home' }"
-             href="#" @click.prevent="state.currentPage = 'home'">📊 Dashboard</a>
+             href="#" @click.prevent="navigate('home')">📊 Dashboard</a>
           <a class="dash-nav-item" :class="{ active: state.currentPage === 'inbox' }"
-             href="#" @click.prevent="state.currentPage = 'inbox'">
+             href="#" @click.prevent="navigate('inbox')">
             📬 My Inbox <span class="nav-badge">99+</span>
           </a>
           <a class="dash-nav-item" :class="{ active: state.currentPage === 'library' }"
-             href="#" @click.prevent="state.currentPage = 'library'">📚 Content Library</a>
+             href="#" @click.prevent="navigate('library')">📚 Content Library</a>
           <a class="dash-nav-item" :class="{ active: state.currentPage === 'billing' }"
-             href="#" @click.prevent="state.currentPage = 'billing'">💳 Billing</a>
+             href="#" @click.prevent="navigate('billing')">💳 Billing</a>
           <a class="dash-nav-item" :class="{ active: state.currentPage === 'settings' }"
-             href="#" @click.prevent="state.currentPage = 'settings'">⚙️ Settings</a>
+             href="#" @click.prevent="navigate('settings')">⚙️ Settings</a>
           <a class="dash-nav-item" :class="{ active: state.currentPage === 'referrals' }"
-             href="#" @click.prevent="state.currentPage = 'referrals'">👥 Referrals</a>
+             href="#" @click.prevent="navigate('referrals')">👥 Referrals</a>
           <a class="dash-nav-item" :class="{ active: state.currentPage === 'help' }"
-             href="#" @click.prevent="state.currentPage = 'help'">❓ Help</a>
+             href="#" @click.prevent="navigate('help')">❓ Help</a>
         </nav>
 
         <div class="sidebar-stat-box">
@@ -131,10 +141,15 @@ import DashboardSettings from './DashboardSettings.vue'
 import DashboardReferrals from './DashboardReferrals.vue'
 import DashboardHelp from './DashboardHelp.vue'
 
-const { state } = useSubscription()
+const { state, isTrial } = useSubscription()
 
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
 const onlineCount = ref(Math.floor(Math.random() * 4) + 2)
+
+function navigate(page) {
+  state.currentPage = page
+  state.showSidebar = false
+}
 
 function windowAlert(msg) { window.alert(msg) }
 </script>
@@ -202,6 +217,7 @@ function windowAlert(msg) { window.alert(msg) }
 }
 .dash-action-btn:hover { background: rgba(255,255,255,0.2); }
 
+
 /* ── Body layout ── */
 .dash-body {
   display: flex;
@@ -209,6 +225,21 @@ function windowAlert(msg) { window.alert(msg) }
   margin: 0 auto;
   gap: 0;
   min-height: 600px;
+  position: relative;
+}
+
+/* ── Sidebar backdrop (mobile) ── */
+.sidebar-backdrop {
+  display: none;
+}
+@media (max-width: 640px) {
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+  }
 }
 
 /* ── Sidebar ── */
@@ -221,7 +252,50 @@ function windowAlert(msg) { window.alert(msg) }
 }
 
 @media (max-width: 640px) {
-  .dash-sidebar { display: none; }
+  .dash-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 201;
+    width: 240px;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: none;
+  }
+  .dash-sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+  }
+}
+
+/* ── Sidebar close row (visible on mobile) ── */
+.sidebar-close-row {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.sidebar-close-label {
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+}
+.sidebar-close-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+.sidebar-close-btn:hover { color: var(--dark); }
+@media (max-width: 640px) {
+  .sidebar-close-row { display: flex; }
+  .dash-nav { margin-top: 0; } /* label already in close row */
 }
 
 .dash-nav { display: flex; flex-direction: column; gap: 2px; margin-bottom: 1.25rem; }
@@ -233,6 +307,10 @@ function windowAlert(msg) { window.alert(msg) }
   color: #94a3b8;
   padding: 0.25rem 0.5rem;
   margin-bottom: 0.25rem;
+}
+/* Hide the nav label on mobile since close-row shows it */
+@media (max-width: 640px) {
+  .dash-nav-label { display: none; }
 }
 
 .dash-nav-item {
@@ -262,7 +340,6 @@ function windowAlert(msg) { window.alert(msg) }
   padding: 0.1rem 0.35rem;
   border-radius: 10px;
 }
-.nav-lock { font-size: 0.75rem; }
 
 .sidebar-stat-box {
   background: white;

@@ -25,6 +25,8 @@ const state = reactive({
   showModal: false,
   showCancelTrialModal: false,
   showCancelFlow: false,
+  showWelcomeModal: false,
+  showSidebar: false,
   cancelStep: 1,
   showConfetti: false,
   selectedPlan: saved.plan || 'monthly',
@@ -71,6 +73,7 @@ function promptCancelTrial() {
 function confirmCancelTrial() {
   state.status = 'active'
   state.showCancelTrialModal = false
+  state.showWelcomeModal = true
   state.showConfetti = true
   persist()
   setTimeout(() => { state.showConfetti = false }, 3500)

@@ -1,7 +1,6 @@
 <template>
   <div>
     <NavBar />
-    <SubscribedBanner />
 
     <DashboardSection v-if="state.status !== 'none'" />
     <main v-else>
@@ -20,6 +19,7 @@
     <SubscriptionModal v-if="state.showModal" />
     <CancelTrialModal v-if="state.showCancelTrialModal" />
     <CancelFlow v-if="state.showCancelFlow" />
+    <WelcomeModal v-if="state.showWelcomeModal" />
     <Confetti v-if="state.showConfetti" />
   </div>
 </template>
@@ -41,6 +41,7 @@ import DashboardSection from './components/DashboardSection.vue'
 import SubscriptionModal from './components/SubscriptionModal.vue'
 import CancelTrialModal from './components/CancelTrialModal.vue'
 import CancelFlow from './components/CancelFlow.vue'
+import WelcomeModal from './components/WelcomeModal.vue'
 import Confetti from './components/Confetti.vue'
 
 const { state, isNone, openModal } = useSubscription()
