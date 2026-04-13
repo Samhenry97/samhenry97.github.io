@@ -164,7 +164,11 @@ body {
   width: 100%;
   box-shadow: var(--shadow-lg);
   position: relative;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  scrollbar-width: none;
 }
+.modal-card::-webkit-scrollbar { display: none; }
 
 /* ── Fine print ── */
 .fine-print {
